@@ -40,7 +40,7 @@ WORKDIR ${GPGME_SOP_DIR}
 
 RUN cargo build --features=cli --release
 
-ENV GPGME_SOP=${GPGME_SOP_DIR}/target/debug/gpgme-sop
+ENV GPGME_SOP=${GPGME_SOP_DIR}/target/release/gpgme-sop
 
 # Install golang
 
@@ -148,6 +148,6 @@ WORKDIR ${RNP_SOP_DIR}
 
 RUN cargo build --release
 
-ENV RNP_SOP=${RNP_SOP_DIR}/target/debug/rnp-sop
+ENV RNP_SOP=${RNP_SOP_DIR}/target/release/rnp-sop
 
 WORKDIR /
