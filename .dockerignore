@@ -1,0 +1,5 @@
+.gitignore
+Makefile
+.github
+Dockerfile
+README.md
