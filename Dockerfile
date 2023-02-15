@@ -148,6 +148,6 @@ WORKDIR ${RNP_SOP_DIR}
 
 RUN cargo build --release
 
-ENV RNG_SOP=${RNP_SOP_DIR}/target/debug/rnp-sop
+ENV RNP_SOP=${RNP_SOP_DIR}/target/debug/rnp-sop
 
 WORKDIR /
