@@ -1,4 +1,4 @@
-# openpgp-test-suite-docker
+# openpgp-interop-test-docker
 
 A docker image to run the openpgp interoperability test suite, with a few implementations pre installed.
 
