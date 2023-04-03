@@ -102,13 +102,20 @@ ENV GOSOP=${GOSOP_DIR}/gosop
 
 # Install sop-openpgpjs
 
-RUN apt update && apt install -y nodejs npm
+# Default is LTS
+ARG NODE_VERSION=18.15.0
+
+RUN apt update && apt install -y nodejs npm wget
+
+RUN npm install -g n && n install ${NODE_VERSION}
 
 ENV SOP_OPENPGPJS_DIR=/sop-openpgpjs
 
 ARG SOP_OPENPGPJS_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
 
 ARG SOP_OPENPGPJS_REF=e650d7ebc728d8851938a9b4be1f2dd847ba93c7
+
+
 
 RUN mkdir ${SOP_OPENPGPJS_DIR}
 
