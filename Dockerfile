@@ -22,7 +22,7 @@ ENV TEST_SUITE=${TEST_SUITE_DIR}/target/debug/openpgp-interoperability-test-suit
 
 # Install sqop
 
-ARG SQOP_VERSION="0.27.3"
+ARG SQOP_VERSION="0.29.0"
 
 RUN cargo install sequoia-sop --version ${SQOP_VERSION} --features=cli
 
@@ -42,7 +42,7 @@ RUN mkdir ${GPGME_SOP_DIR}
 
 ARG GPGME_SOP_REPO=https://gitlab.com/sequoia-pgp/gpgme-sop.git
 
-ARG GPGME_SOP_REF=40f1e0372747e0f0d15713c13510394e5ef32108
+ARG GPGME_SOP_REF=8663f6049953c660c4a417d25fd8fb740a6ea7b9
 
 RUN git clone ${GPGME_SOP_REPO} ${GPGME_SOP_DIR}
 
@@ -60,9 +60,9 @@ RUN apt update && apt install -y wget
 
 ENV GOLANG_DIR=/go
 
-ARG GOLANG_VERSION="1.20.1"
+ARG GOLANG_VERSION="1.21.0"
 
-ARG GOLANG_CHECK_SUM="000a5b1fca4f75895f78befeb2eecf10bfff3c428597f3f1e69133b63b911b02"
+ARG GOLANG_CHECK_SUM="d0398903a16ba2232b389fb31032ddf57cac34efda306a0eebac34f0965a0742"
 
 RUN mkdir ${GOLANG_DIR}
 
@@ -86,7 +86,7 @@ RUN mkdir ${GOSOP_DIR}
 
 ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
 
-ARG GOSOP_REF=92fc880b0f3bc7f5c7f64c7e5894f1ff347ea619
+ARG GOSOP_REF=33c3c882e6b424e2e795a116d5ea213a724096be
 
 RUN git clone ${GOSOP_REPO} ${GOSOP_DIR}
 
@@ -113,7 +113,7 @@ ENV SOP_OPENPGPJS_DIR=/sop-openpgpjs
 
 ARG SOP_OPENPGPJS_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
 
-ARG SOP_OPENPGPJS_REF=e650d7ebc728d8851938a9b4be1f2dd847ba93c7
+ARG SOP_OPENPGPJS_REF=3c8846a0a5c57b7a6edb4afabb9de8429c5dce94
 
 
 
@@ -154,7 +154,7 @@ ENV RNP_DIR=/rnp
 
 RUN mkdir ${RNP_DIR}
 
-ARG RNP_VESION="v0.16.2"
+ARG RNP_VESION="v0.17.0"
 
 RUN git clone https://github.com/rnpgp/rnp.git -b ${RNP_VESION} ${RNP_DIR}
 
