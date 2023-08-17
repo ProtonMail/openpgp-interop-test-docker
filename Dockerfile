@@ -154,7 +154,7 @@ ENV RNP_DIR=/rnp
 
 RUN mkdir ${RNP_DIR}
 
-ARG RNP_VESION="v0.17.0"
+ARG RNP_VESION="v0.16.2"
 
 RUN git clone https://github.com/rnpgp/rnp.git -b ${RNP_VESION} ${RNP_DIR}
 
