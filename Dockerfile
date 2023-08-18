@@ -4,7 +4,7 @@ FROM ubuntu
 
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
 
-ARG TEST_SUITE_REF=37461789e3dfcb1c131082ffa6e862cfc88f9507
+ARG TEST_SUITE_REF=116e20aac03708a9e919f307c077c1324fa9bb98
 
 RUN apt update && apt install -y git rustc cargo clang llvm pkg-config nettle-dev
 
