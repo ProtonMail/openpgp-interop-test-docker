@@ -4,7 +4,7 @@ FROM ubuntu
 
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
 
-ARG TEST_SUITE_REF=116e20aac03708a9e919f307c077c1324fa9bb98
+ARG TEST_SUITE_REF=7dbee6afaa7c02369138a8e73fb889b676651f58
 
 RUN apt update && apt install -y git rustc cargo clang llvm pkg-config nettle-dev
 
@@ -99,6 +99,28 @@ RUN go build .
 ENV PATH=${GOSOP_DIR}:${PATH}
 
 ENV GOSOP=${GOSOP_DIR}/gosop
+
+# Install gosop-v2 with gopenpgp v3
+
+ENV GOSOP_DIR_V2=/gosop-v2
+
+RUN mkdir ${GOSOP_DIR_V2}
+
+ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
+
+ARG GOSOP_REF=01540fa6dbae980dfcc10e923ec674b22c454ab9
+
+RUN git clone ${GOSOP_REPO} ${GOSOP_DIR_V2}
+
+WORKDIR ${GOSOP_DIR_V2}
+
+RUN git checkout ${GOSOP_REF}
+
+RUN go build .
+
+ENV PATH=${GOSOP_DIR_V2}:${PATH}
+
+ENV GOSOP_V2=${GOSOP_DIR_V2}/gosop-v2
 
 # Install sop-openpgpjs
 
