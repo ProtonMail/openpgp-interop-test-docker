@@ -4,7 +4,7 @@ FROM ubuntu
 
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
 
-ARG TEST_SUITE_REF=7dbee6afaa7c02369138a8e73fb889b676651f58
+ARG TEST_SUITE_REF=646eb471339032e594b336d9f1660bc8cb239feb
 
 RUN apt update && apt install -y git rustc cargo clang llvm pkg-config nettle-dev
 
@@ -22,7 +22,7 @@ ENV TEST_SUITE=${TEST_SUITE_DIR}/target/debug/openpgp-interoperability-test-suit
 
 # Install sqop
 
-ARG SQOP_VERSION="0.29.0"
+ARG SQOP_VERSION="0.32.0"
 
 RUN cargo install sequoia-sop --version ${SQOP_VERSION} --features=cli
 
@@ -108,7 +108,7 @@ RUN mkdir ${GOSOP_DIR_V2}
 
 ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
 
-ARG GOSOP_REF=01540fa6dbae980dfcc10e923ec674b22c454ab9
+ARG GOSOP_REF=e6e47b1031e59aa5dcaf92a33a171116e28dbbc2
 
 RUN git clone ${GOSOP_REPO} ${GOSOP_DIR_V2}
 
@@ -135,7 +135,7 @@ ENV SOP_OPENPGPJS_DIR=/sop-openpgpjs
 
 ARG SOP_OPENPGPJS_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
 
-ARG SOP_OPENPGPJS_REF=3c8846a0a5c57b7a6edb4afabb9de8429c5dce94
+ARG SOP_OPENPGPJS_REF=8e94fea08b422dad6cf68498baa3297928031397
 
 
 
