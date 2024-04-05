@@ -137,8 +137,6 @@ ARG SOP_OPENPGPJS_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
 
 ARG SOP_OPENPGPJS_REF=d35fe10b1818da9047d9a335f93d96bc098a1635
 
-
-
 RUN mkdir ${SOP_OPENPGPJS_DIR}
 
 RUN git clone ${SOP_OPENPGPJS_REPO} ${SOP_OPENPGPJS_DIR}
@@ -153,8 +151,28 @@ ENV PATH=${SOP_OPENPGPJS_DIR}:${PATH}
 
 ENV SOP_OPENPGPJS=${SOP_OPENPGPJS_DIR}/sop-openpgp
 
-# Install RNP
+# Install sop-openpgpjs with v6 support
+ENV SOP_OPENPGPJS_V2_DIR=/sop-openpgpjs-v2
 
+ARG SOP_OPENPGPJS_V2_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
+
+ARG SOP_OPENPGPJS_V2_TAG=v2.0.0-0
+
+RUN mkdir ${SOP_OPENPGPJS_V2_DIR}
+
+RUN git clone ${SOP_OPENPGPJS_V2_REPO} ${SOP_OPENPGPJS_V2_DIR}
+
+WORKDIR ${SOP_OPENPGPJS_V2_DIR}
+
+RUN git checkout tags/${SOP_OPENPGPJS_V2_TAG}
+
+RUN npm install
+
+ENV PATH=${SOP_OPENPGPJS_V2_DIR}:${PATH}
+
+ENV SOP_OPENPGPJS_V2=${SOP_OPENPGPJS_V2_DIR}/sop-openpgp
+
+# Install RNP
 RUN apt update && apt install -y cmake libbz2-dev zlib1g-dev libjson-c-dev build-essential python3 python-is-python3
 
 ENV BOTAN_DIR=/botan
