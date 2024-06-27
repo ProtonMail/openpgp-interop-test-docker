@@ -4,7 +4,7 @@ FROM ubuntu
 
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
 
-ARG TEST_SUITE_REF=646eb471339032e594b336d9f1660bc8cb239feb
+ARG TEST_SUITE_REF=2273f28f86a7407d71cfac34e4fda0a444b4d42a
 
 RUN apt update && apt install -y git rustc cargo clang llvm pkg-config nettle-dev
 
@@ -86,7 +86,7 @@ RUN mkdir ${GOSOP_DIR}
 
 ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
 
-ARG GOSOP_REF=33c3c882e6b424e2e795a116d5ea213a724096be
+ARG GOSOP_REF=30dd70b0383eb3d1c510ac6d2cfd6361ddb26f27
 
 RUN git clone ${GOSOP_REPO} ${GOSOP_DIR}
 
@@ -108,7 +108,7 @@ RUN mkdir ${GOSOP_DIR_V2}
 
 ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
 
-ARG GOSOP_REF=e6e47b1031e59aa5dcaf92a33a171116e28dbbc2
+ARG GOSOP_REF=1b7ce791cdbd1571633abf7056606abfe8301704
 
 RUN git clone ${GOSOP_REPO} ${GOSOP_DIR_V2}
 
