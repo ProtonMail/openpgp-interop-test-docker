@@ -215,7 +215,7 @@ RUN mkdir ${RNP_SOP_DIR}
 
 ARG RNP_SOP_REPO=https://gitlab.com/sequoia-pgp/rnp-sop.git
 
-ARG RNP_SOP_REF=242491142047532c92cb1ea94abb5256d388665e
+ARG RNP_SOP_REF=da6f630c08ecc4f2f6faf31e412e04d4c1d00498
 
 RUN git clone ${RNP_SOP_REPO} ${RNP_SOP_DIR}
 
