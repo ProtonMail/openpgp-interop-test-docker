@@ -219,7 +219,7 @@ RUN mkdir ${SOP_RS_DIR}
 
 RUN git clone https://gitlab.com/sequoia-pgp/sop-rs.git ${SOP_RS_DIR}
 
-WORKDIR ${RNP_SOP_DIR}
+WORKDIR ${SOP_RS_DIR}
 
 ARG SOP_RS_REF=v0.7.1
 
