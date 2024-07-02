@@ -6,7 +6,7 @@ ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test
 
 ARG TEST_SUITE_REF=2273f28f86a7407d71cfac34e4fda0a444b4d42a
 
-RUN apt update && apt install -y git rustc cargo clang llvm pkg-config nettle-dev
+RUN apt update && apt install -y git rustc cargo clang-15 llvm pkg-config nettle-dev
 
 ENV TEST_SUITE_DIR=/test-suite
 
@@ -177,7 +177,7 @@ RUN apt update && apt install -y cmake libbz2-dev zlib1g-dev libjson-c-dev build
 
 ENV BOTAN_DIR=/botan
 
-ARG BOTAN_VERSION="2.18.2"
+ARG BOTAN_VERSION="2.19.4"
 
 RUN mkdir ${BOTAN_DIR}
 
@@ -194,16 +194,16 @@ ENV RNP_DIR=/rnp
 
 RUN mkdir ${RNP_DIR}
 
-ARG RNP_VESION="v0.16.2"
+ARG RNP_VESION="v0.17.1"
 
-RUN git clone https://github.com/rnpgp/rnp.git -b ${RNP_VESION} ${RNP_DIR}
+RUN git clone https://github.com/rnpgp/rnp.git --recurse-submodules --shallow-submodules -b ${RNP_VESION} ${RNP_DIR}
 
 WORKDIR ${RNP_DIR}
 
 RUN mkdir build
 
 RUN cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off ../ && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off .. && \
     make && \
     make install
 
@@ -221,13 +221,13 @@ RUN git clone https://gitlab.com/sequoia-pgp/sop-rs.git ${SOP_RS_DIR}
 
 WORKDIR ${SOP_RS_DIR}
 
-ARG SOP_RS_REF=v0.7.1
+ARG SOP_RS_REF=v0.6.0
 
 RUN git checkout ${SOP_RS_REF}
 
 ARG RNP_SOP_REPO=https://gitlab.com/sequoia-pgp/rnp-sop.git
 
-ARG RNP_SOP_REF=da6f630c08ecc4f2f6faf31e412e04d4c1d00498
+ARG RNP_SOP_REF=242491142047532c92cb1ea94abb5256d388665e
 
 RUN git clone ${RNP_SOP_REPO} ${RNP_SOP_DIR}
 
