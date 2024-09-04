@@ -78,7 +78,7 @@ RUN rm go${GOLANG_VERSION}.linux-amd64.tar.gz
 
 ENV PATH=${GOLANG_DIR}/bin:${PATH}
 
-# Install gosop
+# Install gosop (for gopenpgp v2)
 
 ENV GOSOP_DIR=/gosop
 
@@ -100,7 +100,7 @@ ENV PATH=${GOSOP_DIR}:${PATH}
 
 ENV GOSOP=${GOSOP_DIR}/gosop
 
-# Install gosop-v2 with gopenpgp v3
+# Install gosop-v2 (for gopenpgp v3)
 
 ENV GOSOP_DIR_V2=/gosop-v2
 
@@ -108,7 +108,7 @@ RUN mkdir ${GOSOP_DIR_V2}
 
 ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
 
-ARG GOSOP_REF=1b7ce791cdbd1571633abf7056606abfe8301704
+ARG GOSOP_REF=488b4128fb242eb3e5806013e152e8313200e19f
 
 RUN git clone ${GOSOP_REPO} ${GOSOP_DIR_V2}
 
