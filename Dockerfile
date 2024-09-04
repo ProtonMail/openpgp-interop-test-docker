@@ -120,7 +120,7 @@ RUN go build .
 
 ENV PATH=${GOSOP_DIR_V2}:${PATH}
 
-ENV GOSOP_V2=${GOSOP_DIR_V2}/gosop-v2
+ENV GOSOP_V2=${GOSOP_DIR_V2}/gosop
 
 # Install sop-openpgpjs
 
