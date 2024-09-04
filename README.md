@@ -51,3 +51,11 @@ SOP implementations using RNP as the backend
 https://gitlab.com/sequoia-pgp/rnp-sop
 
 https://github.com/rnpgp/rnp
+
+### rsop
+
+SOP implementations using rpgp (via rpgpie) as the backend
+
+https://codeberg.org/heiko/rsop
+
+https://github.com/rpgp/rpgp

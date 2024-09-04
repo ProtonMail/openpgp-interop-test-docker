@@ -240,3 +240,13 @@ RUN cargo build --release
 ENV RNP_SOP=${RNP_SOP_DIR}/target/release/rnp-sop
 
 WORKDIR /
+
+# Install rsop
+
+ARG RSOP_VERSION="0.3.7"
+
+RUN apt install -y libpcsclite-dev
+
+RUN cargo install rsop --version ${RSOP_VERSION}
+
+ENV RSOP=/root/.cargo/bin/rsop
