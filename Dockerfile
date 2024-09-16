@@ -245,7 +245,7 @@ WORKDIR /
 
 ARG RSOP_VERSION="0.3.7"
 
-RUN apt install -y libpcsclite-dev
+RUN apt install -y libpcsclite-dev libdbus-1-dev pkg-config
 
 RUN cargo install rsop --version ${RSOP_VERSION}
 
