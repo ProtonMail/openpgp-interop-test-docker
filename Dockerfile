@@ -156,7 +156,7 @@ ENV SOP_OPENPGPJS_V2_DIR=/sop-openpgpjs-v2
 
 ARG SOP_OPENPGPJS_V2_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
 
-ARG SOP_OPENPGPJS_V2_TAG=v2.0.0-0
+ARG SOP_OPENPGPJS_V2_TAG=v2.0.0-1
 
 RUN mkdir ${SOP_OPENPGPJS_V2_DIR}
 
@@ -170,7 +170,7 @@ RUN npm install
 
 ENV PATH=${SOP_OPENPGPJS_V2_DIR}:${PATH}
 
-ENV SOP_OPENPGPJS_V2=${SOP_OPENPGPJS_V2_DIR}/sop-openpgp
+ENV SOP_OPENPGPJS_V2=${SOP_OPENPGPJS_V2_DIR}/sopenpgpjs
 
 # Install RNP
 RUN apt update && apt install -y cmake libbz2-dev zlib1g-dev libjson-c-dev build-essential python3 python-is-python3
