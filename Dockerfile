@@ -243,7 +243,7 @@ WORKDIR /
 
 # Install rsop
 
-ARG RSOP_VERSION="0.3.7"
+ARG RSOP_VERSION="0.4.0-alpha.1"
 
 RUN apt install -y libpcsclite-dev libdbus-1-dev pkg-config
 
