@@ -177,7 +177,7 @@ RUN apt update && apt install -y cmake libbz2-dev zlib1g-dev libjson-c-dev build
 
 ENV BOTAN_DIR=/botan
 
-ARG BOTAN_VERSION="2.19.4"
+ARG BOTAN_VERSION="3.4.0"
 
 RUN mkdir ${BOTAN_DIR}
 
@@ -203,31 +203,18 @@ WORKDIR ${RNP_DIR}
 RUN mkdir build
 
 RUN cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off .. && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off -DENABLE_CRYPTO_REFRESH=on .. && \
     make && \
     make install
 
 # Install RNP-SOP
-
 ENV RNP_SOP_DIR=/rnp-sop
-
-ENV SOP_RS_DIR=/sop-rs
 
 RUN mkdir ${RNP_SOP_DIR}
 
-RUN mkdir ${SOP_RS_DIR}
-
-RUN git clone https://gitlab.com/sequoia-pgp/sop-rs.git ${SOP_RS_DIR}
-
-WORKDIR ${SOP_RS_DIR}
-
-ARG SOP_RS_REF=v0.6.0
-
-RUN git checkout ${SOP_RS_REF}
-
 ARG RNP_SOP_REPO=https://gitlab.com/sequoia-pgp/rnp-sop.git
 
-ARG RNP_SOP_REF=242491142047532c92cb1ea94abb5256d388665e
+ARG RNP_SOP_REF=5e013ad2eb026dd584b15330c84589c1e5ebc574
 
 RUN git clone ${RNP_SOP_REPO} ${RNP_SOP_DIR}
 
