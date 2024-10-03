@@ -1,12 +1,29 @@
 FROM ubuntu
 
+# Install rust
+
+ENV RUST_VERSION=1.81.0
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential 
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+ENV PATH=/root/.cargo/bin:$PATH
+
+RUN rustup install ${RUST_VERSION} \
+    && rustup default ${RUST_VERSION}
+
+RUN rustc --version
+
 # Build test suite
 
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
 
 ARG TEST_SUITE_REF=2273f28f86a7407d71cfac34e4fda0a444b4d42a
 
-RUN apt update && apt install -y git rustc cargo clang-15 llvm pkg-config nettle-dev
+RUN apt update && apt install -y git clang-15 llvm pkg-config nettle-dev
 
 ENV TEST_SUITE_DIR=/test-suite
 
