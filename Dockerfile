@@ -1,256 +1,138 @@
-FROM ubuntu
+FROM ubuntu AS build
 
-# Install rust
+# Set up essential build tools and libraries
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
+    curl build-essential git wget ca-certificates\
+    # Interoperability test suite
+    clang-15 llvm pkg-config nettle-dev \
+    # GnuPG dependencies
+    gnupg libgpg-error-dev libgpgme-dev  \
+    # RNP with Botan dependencies
+    cmake libbz2-dev zlib1g-dev libjson-c-dev python3 python-is-python3 \
+    # rSOP
+    libpcsclite-dev libdbus-1-dev
 
+# Install Rust
 ENV RUST_VERSION=1.81.0
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    . "$HOME/.cargo/env" && \
+    rustup install ${RUST_VERSION} && rustup default ${RUST_VERSION} && \
+    rustc --version
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    build-essential 
+# Install Go
+ENV GOLANG_VERSION=1.21.0 GOLANG_DIR=/go
+WORKDIR /scratch
+RUN wget https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz && rm go${GOLANG_VERSION}.linux-amd64.tar.gz
+ENV PATH="/usr/local/go/bin:${PATH}"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# Install Node.js (LTS)
+ARG NODE_VERSION=18.15.0
+RUN apt-get install -y -qq --no-install-recommends nodejs npm && \
+    npm install -g n && n install ${NODE_VERSION}
 
-ENV PATH=/root/.cargo/bin:$PATH
-
-RUN rustup install ${RUST_VERSION} \
-    && rustup default ${RUST_VERSION}
-
-RUN rustc --version
-
-# Build test suite
-
+# Test Suite
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
-
 ARG TEST_SUITE_REF=2273f28f86a7407d71cfac34e4fda0a444b4d42a
-
-RUN apt update && apt install -y git clang-15 llvm pkg-config nettle-dev
-
-ENV TEST_SUITE_DIR=/test-suite
-
-RUN git clone  ${TEST_SUITE_REPO} ${TEST_SUITE_DIR}
-
-WORKDIR ${TEST_SUITE_DIR}
-
-RUN git checkout ${TEST_SUITE_REF}
-
+WORKDIR /test-suite
+RUN git clone ${TEST_SUITE_REPO} . && \
+    git checkout ${TEST_SUITE_REF}
 RUN cargo build
 
-ENV TEST_SUITE=${TEST_SUITE_DIR}/target/debug/openpgp-interoperability-test-suite
+# All sops will be stored here
+WORKDIR /sops
 
 # Install sqop
-
 ARG SQOP_VERSION="0.32.0"
-
 RUN cargo install sequoia-sop --version ${SQOP_VERSION} --features=cli
+RUN cp /root/.cargo/bin/sqop /sops
 
-ENV SQOP=/root/.cargo/bin/sqop
-
-ENV PATH=/root/.cargo/bin:${PATH}
-
-# Install gpg
-
-RUN apt update && apt install -y gnupg libgpg-error-dev libgpgme-dev
-
-# Install gpgme
-
-ENV GPGME_SOP_DIR=/gpgme-sop
-
-RUN mkdir ${GPGME_SOP_DIR}
-
+# GPGME Sop
 ARG GPGME_SOP_REPO=https://gitlab.com/sequoia-pgp/gpgme-sop.git
-
 ARG GPGME_SOP_REF=8663f6049953c660c4a417d25fd8fb740a6ea7b9
-
-RUN git clone ${GPGME_SOP_REPO} ${GPGME_SOP_DIR}
-
-WORKDIR ${GPGME_SOP_DIR}
-
-RUN git checkout ${GPGME_SOP_REF}
-
+WORKDIR /scratch/gpgme-sop
+RUN git clone ${GPGME_SOP_REPO} . && \
+    git checkout ${GPGME_SOP_REF}
 RUN cargo build --features=cli --release
+RUN cp /scratch/gpgme-sop/target/release/gpgme-sop /sops
 
-ENV GPGME_SOP=${GPGME_SOP_DIR}/target/release/gpgme-sop
-
-# Install golang
-
-RUN apt update && apt install -y wget
-
-ENV GOLANG_DIR=/go
-
-ARG GOLANG_VERSION="1.21.0"
-
-ARG GOLANG_CHECK_SUM="d0398903a16ba2232b389fb31032ddf57cac34efda306a0eebac34f0965a0742"
-
-RUN mkdir ${GOLANG_DIR}
-
-WORKDIR ${GOLANG_DIR}
-
-RUN wget https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz
-
-RUN echo "${GOLANG_CHECK_SUM} go${GOLANG_VERSION}.linux-amd64.tar.gz" | sha256sum --check --status
-
-RUN tar -C / -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
-
-RUN rm go${GOLANG_VERSION}.linux-amd64.tar.gz
-
-ENV PATH=${GOLANG_DIR}/bin:${PATH}
-
-# Install gosop (for gopenpgp v2)
-
-ENV GOSOP_DIR=/gosop
-
-RUN mkdir ${GOSOP_DIR}
-
+# GoSOP
 ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
-
 ARG GOSOP_REF=30dd70b0383eb3d1c510ac6d2cfd6361ddb26f27
+WORKDIR /scratch/gosop
+RUN git clone ${GOSOP_REPO} . && \
+    git checkout ${GOSOP_REF}
+RUN go build
+RUN cp /scratch/gosop/gosop /sops
 
-RUN git clone ${GOSOP_REPO} ${GOSOP_DIR}
+# GoSOP V2
+ARG GOSOP_REF_V2=488b4128fb242eb3e5806013e152e8313200e19f
+WORKDIR /scratch/gosop-v2
+RUN git clone ${GOSOP_REPO} . && \
+    git checkout ${GOSOP_REF_V2}
+RUN go build
+RUN cp /scratch/gosop-v2/gosop /sops/gosop-v2
 
-WORKDIR ${GOSOP_DIR}
-
-RUN git checkout ${GOSOP_REF}
-
-RUN go build .
-
-ENV PATH=${GOSOP_DIR}:${PATH}
-
-ENV GOSOP=${GOSOP_DIR}/gosop
-
-# Install gosop-v2 (for gopenpgp v3)
-
-ENV GOSOP_DIR_V2=/gosop-v2
-
-RUN mkdir ${GOSOP_DIR_V2}
-
-ARG GOSOP_REPO=https://github.com/ProtonMail/gosop.git
-
-ARG GOSOP_REF=488b4128fb242eb3e5806013e152e8313200e19f
-
-RUN git clone ${GOSOP_REPO} ${GOSOP_DIR_V2}
-
-WORKDIR ${GOSOP_DIR_V2}
-
-RUN git checkout ${GOSOP_REF}
-
-RUN go build .
-
-ENV PATH=${GOSOP_DIR_V2}:${PATH}
-
-ENV GOSOP_V2=${GOSOP_DIR_V2}/gosop
-
-# Install sop-openpgpjs
-
-# Default is LTS
-ARG NODE_VERSION=18.15.0
-
-RUN apt update && apt install -y nodejs npm wget
-
-RUN npm install -g n && n install ${NODE_VERSION}
-
-ENV SOP_OPENPGPJS_DIR=/sop-openpgpjs
-
+# OpenPGP.js Sop
 ARG SOP_OPENPGPJS_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
-
 ARG SOP_OPENPGPJS_REF=d35fe10b1818da9047d9a335f93d96bc098a1635
-
-RUN mkdir ${SOP_OPENPGPJS_DIR}
-
-RUN git clone ${SOP_OPENPGPJS_REPO} ${SOP_OPENPGPJS_DIR}
-
-WORKDIR ${SOP_OPENPGPJS_DIR}
-
-RUN git checkout ${SOP_OPENPGPJS_REF}
-
+WORKDIR /sops/sop-openpgpjs
+RUN git clone ${SOP_OPENPGPJS_REPO} . && \
+    git checkout ${SOP_OPENPGPJS_REF}
 RUN npm install
 
-ENV PATH=${SOP_OPENPGPJS_DIR}:${PATH}
-
-ENV SOP_OPENPGPJS=${SOP_OPENPGPJS_DIR}/sop-openpgp
-
-# Install sop-openpgpjs with v6 support
-ENV SOP_OPENPGPJS_V2_DIR=/sop-openpgpjs-v2
-
-ARG SOP_OPENPGPJS_V2_REPO=https://github.com/openpgpjs/sop-openpgpjs.git
-
+# OpenPGP.js V6 Sop
 ARG SOP_OPENPGPJS_V2_TAG=v2.0.0-1
-
-RUN mkdir ${SOP_OPENPGPJS_V2_DIR}
-
-RUN git clone ${SOP_OPENPGPJS_V2_REPO} ${SOP_OPENPGPJS_V2_DIR}
-
-WORKDIR ${SOP_OPENPGPJS_V2_DIR}
-
-RUN git checkout tags/${SOP_OPENPGPJS_V2_TAG}
-
+WORKDIR /sops/sop-openpgpjs-v2
+RUN git clone ${SOP_OPENPGPJS_REPO} . && \
+    git checkout tags/${SOP_OPENPGPJS_V2_TAG} 
 RUN npm install
 
-ENV PATH=${SOP_OPENPGPJS_V2_DIR}:${PATH}
-
-ENV SOP_OPENPGPJS_V2=${SOP_OPENPGPJS_V2_DIR}/sopenpgpjs
-
-# Install RNP
-RUN apt update && apt install -y cmake libbz2-dev zlib1g-dev libjson-c-dev build-essential python3 python-is-python3
-
-ENV BOTAN_DIR=/botan
-
+# RNP and Botan
 ARG BOTAN_VERSION="3.4.0"
+ARG RNP_VERSION="v0.17.1"
+WORKDIR /scratch/botan
+RUN wget -qO- https://botan.randombit.net/releases/Botan-${BOTAN_VERSION}.tar.xz | tar xvJ && \
+    cd Botan-${BOTAN_VERSION} && ./configure.py --prefix=/usr && make && make install
+WORKDIR /scratch/rnp
+RUN git clone https://github.com/rnpgp/rnp.git --recurse-submodules --shallow-submodules -b ${RNP_VERSION} .
+WORKDIR /scratch/rnp/build
+RUN cmake -DCMAKE_INSTALL_PREFIX=/opt/rnp -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off -DENABLE_CRYPTO_REFRESH=on .. && make -j$(nproc) install
 
-RUN mkdir ${BOTAN_DIR}
-
-WORKDIR ${BOTAN_DIR}
-
-RUN wget -qO- https://botan.randombit.net/releases/Botan-${BOTAN_VERSION}.tar.xz | tar xvJ 
-
-RUN cd Botan-${BOTAN_VERSION} && \
-    ./configure.py --prefix=/usr && \
-    make && \
-    make install
-
-ENV RNP_DIR=/rnp
-
-RUN mkdir ${RNP_DIR}
-
-ARG RNP_VESION="v0.17.1"
-
-RUN git clone https://github.com/rnpgp/rnp.git --recurse-submodules --shallow-submodules -b ${RNP_VESION} ${RNP_DIR}
-
-WORKDIR ${RNP_DIR}
-
-RUN mkdir build
-
-RUN cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off -DENABLE_CRYPTO_REFRESH=on .. && \
-    make && \
-    make install
-
-# Install RNP-SOP
-ENV RNP_SOP_DIR=/rnp-sop
-
-RUN mkdir ${RNP_SOP_DIR}
-
-ARG RNP_SOP_REPO=https://gitlab.com/sequoia-pgp/rnp-sop.git
-
-ARG RNP_SOP_REF=5e013ad2eb026dd584b15330c84589c1e5ebc574
-
-RUN git clone ${RNP_SOP_REPO} ${RNP_SOP_DIR}
-
-WORKDIR ${RNP_SOP_DIR}
-
-RUN git checkout ${RNP_SOP_REF}
-
-RUN cargo build --release
-
-ENV RNP_SOP=${RNP_SOP_DIR}/target/release/rnp-sop
-
-WORKDIR /
+# RNP Sop
+RUN PKG_CONFIG_PATH=/opt/rnp/lib/pkgconfig cargo install --features=cli --git https://gitlab.com/sequoia-pgp/rnp-sop --branch sop-rs-0.7
+RUN cp /root/.cargo/bin/rnp-sop /sops
 
 # Install rsop
-
 ARG RSOP_VERSION="0.4.0-alpha.1"
-
-RUN apt install -y libpcsclite-dev libdbus-1-dev pkg-config
-
 RUN cargo install rsop --version ${RSOP_VERSION}
+RUN cp /root/.cargo/bin/rsop /sops
 
-ENV RSOP=/root/.cargo/bin/rsop
+# Final cleaned up image
+FROM ubuntu
+
+# Install dependencies
+RUN apt-get update -qq && apt install -y -qq --no-install-recommends \
+libnettle8 libssl3 libpcsclite1 nodejs libgpgme11 gnupg gnupg1 libsqlite3-0 \ 
+libdbus-1-3 libjson-c5 libbz2-1.0 zlib1g libjson-c5
+
+# Copy relevant sop data
+COPY --from=build /sops /sops
+COPY --from=build /test-suite /test-suite
+COPY --from=build /opt/rnp /opt/rnp
+COPY --from=build /usr/lib/libbotan-3.so /opt/rnp/lib
+
+# Add /opt/rnp to the ld library search path
+RUN echo "/opt/rnp/lib" >> /etc/ld.so.conf.d/rnp.conf && ldconfig
+
+# Copy relevant sop data
+ENV SOP_OPENPGPJS=/sops/sop-openpgpjs/sop-openpgp
+ENV SOP_OPENPGPJS_V2=/sops/sop-openpgpjs-v2/sop-openpgp
+ENV RNP_SOP=/sops/rnp-sop
+ENV RSOP=/sops/rsop
+ENV GPGME_SOP=/sops/gpgme-sop
+ENV SQOP=/sops/sqop
+ENV GOSOP=/sops/gosop
+ENV GOSOP_V2=/sops/gosop-v2
+ENV TEST_SUITE=/test-suite/target/debug/openpgp-interoperability-test-suite
