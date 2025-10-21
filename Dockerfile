@@ -105,7 +105,7 @@ RUN PKG_CONFIG_PATH=/opt/rnp/lib/pkgconfig cargo install --features=cli --git ht
 RUN cp /root/.cargo/bin/rnp-sop /sops
 
 # Install rsop
-ARG RSOP_VERSION="0.4.0-alpha.1"
+ARG RSOP_VERSION="0.8.0"
 RUN cargo install rsop --version ${RSOP_VERSION}
 RUN cp /root/.cargo/bin/rsop /sops
 
