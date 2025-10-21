@@ -13,7 +13,7 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
     libpcsclite-dev libdbus-1-dev
 
 # Install Rust
-ENV RUST_VERSION=1.81.0
+ENV RUST_VERSION=1.90.0
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
     . "$HOME/.cargo/env" && \
     rustup install ${RUST_VERSION} && rustup default ${RUST_VERSION} && \
