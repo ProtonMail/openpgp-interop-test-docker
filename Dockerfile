@@ -29,6 +29,7 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 
 # Install Node.js (LTS)
 ARG NODE_VERSION=22.21.0
+RUN apt remove nodejs
 RUN apt-get install -y -qq --no-install-recommends nodejs npm && \
     npm install -g n && n install ${NODE_VERSION}
 
