@@ -83,7 +83,7 @@ RUN git clone ${SOP_OPENPGPJS_REPO} . && \
 RUN npm install
 
 # OpenPGP.js V6 Sop
-ARG SOP_OPENPGPJS_V2_TAG=v2.0.0-1
+ARG SOP_OPENPGPJS_V2_TAG=v2.2.0
 WORKDIR /sops/sop-openpgpjs-v2
 RUN git clone ${SOP_OPENPGPJS_REPO} . && \
     git checkout tags/${SOP_OPENPGPJS_V2_TAG} 
