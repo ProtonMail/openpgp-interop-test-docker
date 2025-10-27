@@ -128,7 +128,7 @@ RUN echo "/opt/rnp/lib" >> /etc/ld.so.conf.d/rnp.conf && ldconfig
 
 # Copy relevant sop data
 ENV SOP_OPENPGPJS=/sops/sop-openpgpjs/sop-openpgp
-ENV SOP_OPENPGPJS_V2=/sops/sop-openpgpjs-v2/sop-openpgp
+ENV SOP_OPENPGPJS_V2=/sops/sop-openpgpjs-v2/sopenpgpjs
 ENV RNP_SOP=/sops/rnp-sop
 ENV RSOP=/sops/rsop
 ENV GPGME_SOP=/sops/gpgme-sop
