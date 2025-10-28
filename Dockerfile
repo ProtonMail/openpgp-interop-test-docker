@@ -34,7 +34,7 @@ RUN apt-get install -y -qq --no-install-recommends nodejs npm && \
 
 # Test Suite
 ARG TEST_SUITE_REPO=https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite.git
-ARG TEST_SUITE_REF=2273f28f86a7407d71cfac34e4fda0a444b4d42a
+ARG TEST_SUITE_REF=7034d684ab3aa407d5c48b4e92f0ff0befc83de0
 WORKDIR /test-suite
 RUN git clone ${TEST_SUITE_REPO} . && \
     git checkout ${TEST_SUITE_REF}
