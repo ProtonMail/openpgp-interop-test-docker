@@ -135,4 +135,5 @@ ENV GPGME_SOP=/sops/gpgme-sop
 ENV SQOP=/sops/sqop
 ENV GOSOP=/sops/gosop
 ENV GOSOP_V2=/sops/gosop-v2
-ENV TEST_SUITE=/test-suite/target/debug/openpgp-interoperability-test-suite
+ENV TEST_SUITE_DIR=/test-suite
+ENV TEST_SUITE=${TEST_SUITE_DIR}/target/debug/openpgp-interoperability-test-suite
